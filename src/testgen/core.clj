@@ -5,6 +5,7 @@
      	(list 'is (list '= (list fnname arg) (eval (list fnname arg))))
 	(catch Exception e (list 'is (list 'thrown? (.getClass e) (list fnname arg))))))
 
+
 (defn constant? [arg]
 	(not (or
 		(symbol? arg)
@@ -14,11 +15,11 @@
 
 (def generic-args '(nil () true "test" :test 0 Integer/MAX_VALUE 0.0001 -0.0001))
 
-(defn find-interesting-args [sexpr]
-	"Find things in sexpr which would be interesting if passed as arguments to it"
-	(filter constant? (flatten sexpr)))
+(defn constants [form]
+	"return a list of all elements in this form which are constants"
+  (filter constant? (flatten form)))
 
-(defn find-more-interesting-args [sexpr]
+(defn find-interesting-args [sexpr]
 	"Find things in sexpr which would be even more interesting if passed as arguments to it"
 	(concat generic-args
 		(flatten 
@@ -26,11 +27,15 @@
 				#(cond 
 					(number? %) (list % (inc %) (dec %)) 
 					true %) 
-				(find-interesting-args sexpr)))))
+				(constants sexpr)))))
 
 (defn testgen [fndef] 
 	(cond (= (first fndef) 'defn)
 		(let [name (first (rest fndef))]
 			(list 'deftest (symbol (str "test-" name))
-				(map #(write-test name %) (find-more-interesting-args fndef))))))
+				(map #(write-test name %) (find-interesting-args fndef))))))
+
+;; (defn gen-tests [fnname form]
+;;   (map (partial write-test fnname) (constants form)))
+
 
