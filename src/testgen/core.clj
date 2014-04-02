@@ -2,7 +2,7 @@
 
 (defn write-test [fnname arg] 
      (try
-     	(list 'is (list '= (list fnname arg) (eval (list fnname arg))))
+     	(list 'is (list '= (list fnname arg) (list 'quote (eval (list fnname arg)))))
 	(catch Exception e (list 'is (list 'thrown? (.getClass e) (list fnname arg))))))
 
 
@@ -13,7 +13,7 @@
 		(vector? arg)
 		(map? arg))))
 
-(def generic-args '(nil () true "test" :test 0 Integer/MAX_VALUE 0.0001 -0.0001))
+(def generic-args '(nil () (quote (a :b "c")) true "test" :test 0 Integer/MAX_VALUE 22/7 0.0001 -0.0001))
 
 (defn constants [form]
 	"return a list of all elements in this form which are constants"
@@ -25,14 +25,15 @@
 		(flatten 
 			(map 
 				#(cond 
-					(number? %) (list % (inc %) (dec %)) 
+					(integer? %) (list % (inc %) (dec %)) 
+					(number? %) (list % (+ % 0.0001) (- % 0.0001))
 					true %) 
 				(constants sexpr)))))
 
 (defn testgen [fndef] 
 	(cond (= (first fndef) 'defn)
 		(let [name (first (rest fndef))]
-			(list 'deftest (symbol (str "test-" name))
+			(concat (list 'deftest (symbol (str "test-" name)))
 				(map #(write-test name %) (find-interesting-args fndef))))))
 
 ;; (defn gen-tests [fnname form]
