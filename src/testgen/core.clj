@@ -7,11 +7,15 @@
 
 (defn testgen [fndef] nil)
 
-(defn is-constant? [x] (not (symbol? x)))
+(defn constant? [x] (not (symbol? x)))
 
 (defn constants [form]
-  (filter is-constant? (flatten form)))
+  (filter constant? (flatten form)))
+
+(defn gen-tests [fnname form]
+  (map (partial write-test fnname) (constants form)))
 
 (comment
-  (constants '(fn is-four [x] (= 88 [44])))
+  (def is-four (fn is-four [x] (= 88 [44])))
+  (gen-tests 'is-four '(fn is-four [x] (= 88 [44])))
   )
