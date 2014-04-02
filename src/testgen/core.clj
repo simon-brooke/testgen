@@ -12,7 +12,7 @@
 		(vector? arg)
 		(map? arg))))
 
-(def generic-args nil () true "test" :test 0 Integer/MAX_VALUE 0.0001 -0.0001)
+(def generic-args '(nil () true "test" :test 0 Integer/MAX_VALUE 0.0001 -0.0001))
 
 (defn find-interesting-args [sexpr]
 	"Find things in sexpr which would be interesting if passed as arguments to it"
@@ -26,7 +26,7 @@
 				#(cond 
 					(number? %) (list % (inc %) (dec %)) 
 					true %) 
-				(find-interesting-args sexpr))))
+				(find-interesting-args sexpr)))))
 
 (defn testgen [fndef] 
 	(cond (= (first fndef) 'defn)
