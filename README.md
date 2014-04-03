@@ -14,35 +14,43 @@ When modifying a corpus of legacy code, one wants to make only the desired chang
 
 At this stage, try
 
-    (testgen <function-source>)
+    (generate-tests <filename>)
 
-It will attempt to generate as Clojure source a set of clojure.test test definitions
+It will attempt to read function definitions from the indicated file and generate as Clojure source a set of clojure.test test definitions
 for the code passed. For example:
 
-    user=> (pprint (testgen '(defn testgen [fndef]
-      #_=> (cond (= (first fndef) 'defn)
-      #_=> (let [name (first (rest fndef))]
-      #_=> (list 'deftest (symbol (str "test-" name))
-      #_=> (map #(write-test name %) (find-interesting-args fndef))))))
-      #_=> )
-      #_=> )
     (deftest
-     test-testgen
-     ((is (= (testgen nil) nil))
-      (is (= (testgen ()) nil))
-      (is (thrown? java.lang.IllegalArgumentException (testgen true)))
-      (is (= (testgen "test") nil))
-      (is (thrown? java.lang.IllegalArgumentException (testgen :test)))
-      (is (thrown? java.lang.IllegalArgumentException (testgen 0)))
-      (is
-       (thrown?
-        java.lang.IllegalArgumentException
-        (testgen Integer/MAX_VALUE)))
-      (is (thrown? java.lang.IllegalArgumentException (testgen 1.0E-4)))
-      (is (thrown? java.lang.IllegalArgumentException (testgen -1.0E-4)))
-      (is (= (testgen "test-") nil))))
+     test-write-test
+     (is (thrown? clojure.lang.ArityException (write-test nil)))
+     (is (thrown? clojure.lang.ArityException (write-test ())))
+     (is (thrown? clojure.lang.ArityException (write-test '(a :b "c"))))
+     (is (thrown? clojure.lang.ArityException (write-test true)))
+     (is (thrown? clojure.lang.ArityException (write-test "test")))
+     (is (thrown? clojure.lang.ArityException (write-test :test)))
+     (is (thrown? clojure.lang.ArityException (write-test 0)))
+     (is
+      (thrown? clojure.lang.ArityException (write-test Integer/MAX_VALUE)))
+     (is (thrown? clojure.lang.ArityException (write-test 22/7)))
+     (is (thrown? clojure.lang.ArityException (write-test 1.0E-4)))
+     (is (thrown? clojure.lang.ArityException (write-test -1.0E-4))))
+    (deftest
+     test-constant?
+     (is (= (constant? nil) 'true))
+     (is (= (constant? ()) 'false))
+     (is (= (constant? '(a :b "c")) 'false))
+     (is (= (constant? true) 'true))
+     (is (= (constant? "test") 'true))
+     (is (= (constant? :test) 'true))
+     (is (= (constant? 0) 'true))
+     (is (= (constant? Integer/MAX_VALUE) 'true))
+     (is (= (constant? 22/7) 'true))
+     (is (= (constant? 1.0E-4) 'true))
+     (is (= (constant? -1.0E-4) 'true)))
 
-Note, however, that it only works if the function for which tests are being generated already exists in the environment.
+
+Note, however, that it only works if the function for which tests are being generated already exists in the environment, so for now you have to 'use' the file first.
+
+Note also that it only generates meaningful tests - thus far - for functions of one argument.
 
 ## Where this is going
 
