@@ -17,7 +17,7 @@ At this stage, try
     (generate-tests <filename>)
 
 It will attempt to read function definitions from the indicated file and generate as Clojure source a set of clojure.test test definitions
-for the code passed. For example:
+for the code passed. Currently the output goes to a file just called 'output'. For example:
 
     (deftest
      test-write-test
