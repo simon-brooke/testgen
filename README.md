@@ -50,7 +50,7 @@ What I intend to end up with is a function
 
     (generate-tests <filename>)
 
-which will read the file at <filename>, presumed to be Clojure source, and write a new file containing a complete test suite for that source file, which should exercise every branch and find as many as possible of the interesting corner cases. This does not work yet!
+which will read the file at *filename*, presumed to be Clojure source, and write a new file containing a complete test suite for that source file, which should exercise every branch and find as many as possible of the interesting corner cases. This does not work yet!
 
 ## License
 
