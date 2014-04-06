@@ -111,6 +111,10 @@
 						(cond (= (first form) 'defn)
 							(do 
 								(println (first (rest form)) "...")
-								(pprint (testgen form extra-vars) dickens)))))))
+								(pprint (testgen form extra-vars) dickens)
+								(.write dickens "\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\n")
+								))))
+				(.write dickens "\n\n;; end of file ;;\n\n")
+				(.flush dickens)))
     (catch Exception eof)))
 
