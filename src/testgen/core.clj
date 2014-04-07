@@ -9,12 +9,12 @@
 		(symbol? val) (list 'symbol (str val))
 		true (list 'quote val)))
 
-(defn generate-assertion [fnname arg]
-  "Generate an appropiate assertion for this argument passed to this function"
+(defn generate-assertion [fnname & args]
+  "Generate an appropiate assertion for these arguments passed to this function"
 	(try
-		(let [val (eval (list fnname arg))]
-		   	(list 'is (list '= (list fnname arg) (maybe-quote val))))
-			  (catch Exception e (list 'is (list 'thrown? (.getClass e) (list fnname arg))))))
+		(let [val (eval (cons fnname args))]
+		   	(list 'is (list '= (cons fnname args) (maybe-quote val))))
+			  (catch Exception e (list 'is (list 'thrown? (.getClass e) (cons fnname args))))))
 
 (defn constant? [arg]
 	(not (or
@@ -59,7 +59,7 @@
 	(cond (> prefix-position -1) (.substring without-suffix (+ prefix-position 4))
 		true without-suffix)))
 
-(defn test-filename [filename]
+(defn testname-from-filename [filename]
 	"return an approximately-correct filename in which to save tests"
 	(let [prefix-position (.indexOf filename "src/")
 				prefix (cond (> prefix-position -1) (.substring filename 0 prefix-position)
@@ -68,7 +68,7 @@
 
 
 (defn packagename-from-filename [filename]
-  "Return, as a symbol, the package name associated with this filename. There's
+  "Return, as a symbol, an appropiate name for a test file associated with this filename. There's
   probably a better way of doing this."
   (let [fn (clean-filename filename)]
     (symbol (.replace fn "/" "."))))
@@ -109,12 +109,12 @@
           pn (packagename-from-filename filename)
 					extra-vars (find-vars-in-file filename)]
 			(println "Read vars: " extra-vars)
-			(println "Writing to: " (test-filename filename))
+			(println "Writing to: " (testname-from-filename filename))
       ;; load the file so that any functions in it are usable
       (load fn)
       (refer pn)
 			(with-open [eddi (java.io.PushbackReader. (reader filename))
-                  dickens (writer (test-filename filename))]
+                  dickens (writer (testname-from-filename filename))]
         (write-header dickens pn)
 				(while (.ready eddi)
           (println "reading...")

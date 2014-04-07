@@ -47,35 +47,76 @@
  test-generate-assertion
  (testing
   "generate-assertion"
-  (is (thrown? clojure.lang.ArityException (generate-assertion nil)))
-  (is (thrown? clojure.lang.ArityException (generate-assertion ())))
   (is
-   (thrown?
-    clojure.lang.ArityException
-    (generate-assertion '(a :b "c"))))
-  (is (thrown? clojure.lang.ArityException (generate-assertion true)))
+   (=
+    (generate-assertion nil)
+    '(is (thrown? clojure.lang.Compiler$CompilerException (nil)))))
   (is
-   (thrown? clojure.lang.ArityException (generate-assertion "test")))
-  (is (thrown? clojure.lang.ArityException (generate-assertion :test)))
-  (is (thrown? clojure.lang.ArityException (generate-assertion 0)))
+   (=
+    (generate-assertion ())
+    '(is (thrown? java.lang.ClassCastException (())))))
   (is
-   (thrown?
-    clojure.lang.ArityException
-    (generate-assertion Integer/MAX_VALUE)))
-  (is (thrown? clojure.lang.ArityException (generate-assertion 22/7)))
+   (=
+    (generate-assertion '(a :b "c"))
+    '(is
+      (thrown? clojure.lang.Compiler$CompilerException ((a :b "c"))))))
   (is
-   (thrown? clojure.lang.ArityException (generate-assertion 1.0E-4)))
+   (=
+    (generate-assertion true)
+    '(is (thrown? java.lang.ClassCastException (true)))))
   (is
-   (thrown? clojure.lang.ArityException (generate-assertion -1.0E-4)))
+   (=
+    (generate-assertion "test")
+    '(is (thrown? java.lang.ClassCastException ("test")))))
   (is
-   (thrown?
-    clojure.lang.ArityException
-    (generate-assertion generic-args)))
+   (=
+    (generate-assertion :test)
+    '(is (thrown? java.lang.IllegalArgumentException (:test)))))
   (is
-   (thrown?
-    clojure.lang.ArityException
+   (=
+    (generate-assertion 0)
+    '(is (thrown? java.lang.ClassCastException (0)))))
+  (is
+   (=
+    (generate-assertion Integer/MAX_VALUE)
+    '(is (thrown? java.lang.ClassCastException (2147483647)))))
+  (is
+   (=
+    (generate-assertion 22/7)
+    '(is (thrown? java.lang.ClassCastException (22/7)))))
+  (is
+   (=
+    (generate-assertion 1.0E-4)
+    '(is (thrown? java.lang.ClassCastException (1.0E-4)))))
+  (is
+   (=
+    (generate-assertion -1.0E-4)
+    '(is (thrown? java.lang.ClassCastException (-1.0E-4)))))
+  (is
+   (=
+    (generate-assertion generic-args)
+    '(is
+      (thrown?
+       clojure.lang.Compiler$CompilerException
+       ((nil
+         ()
+         '(a :b "c")
+         true
+         "test"
+         :test
+         0
+         Integer/MAX_VALUE
+         22/7
+         1.0E-4
+         -1.0E-4))))))
+  (is
+   (=
     (generate-assertion
-     "Generate an appropiate assertion for this argument passed to this function")))))
+     "Generate an appropiate assertion for these arguments passed to this function")
+    '(is
+      (thrown?
+       java.lang.ClassCastException
+       ("Generate an appropiate assertion for these arguments passed to this function")))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -285,54 +326,91 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest
- test-test-filename
+ test-testname-from-filename
  (testing
-  "test-filename"
-  (is (thrown? java.lang.NullPointerException (test-filename nil)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename ())))
+  "testname-from-filename"
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (testname-from-filename nil)))
   (is
    (thrown?
     java.lang.IllegalArgumentException
-    (test-filename '(a :b "c"))))
-  (is
-   (thrown? java.lang.IllegalArgumentException (test-filename true)))
-  (is (= (test-filename "test") '"test/test_test.clj"))
-  (is
-   (thrown? java.lang.IllegalArgumentException (test-filename :test)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename 0)))
+    (testname-from-filename ())))
   (is
    (thrown?
     java.lang.IllegalArgumentException
-    (test-filename Integer/MAX_VALUE)))
-  (is
-   (thrown? java.lang.IllegalArgumentException (test-filename 22/7)))
-  (is
-   (thrown? java.lang.IllegalArgumentException (test-filename 1.0E-4)))
+    (testname-from-filename '(a :b "c"))))
   (is
    (thrown?
     java.lang.IllegalArgumentException
-    (test-filename -1.0E-4)))
+    (testname-from-filename true)))
+  (is (= (testname-from-filename "test") '"test/test_test.clj"))
   (is
    (thrown?
     java.lang.IllegalArgumentException
-    (test-filename generic-args)))
+    (testname-from-filename :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename Integer/MAX_VALUE)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 22/7)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename -1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename generic-args)))
   (is
    (=
-    (test-filename
+    (testname-from-filename
      "return an approximately-correct filename in which to save tests")
     '"test/return an approximately-correct filename in which to save tests_test.clj"))
-  (is (= (test-filename "src/") '"test/_test.clj"))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename -1)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename 0)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename -2)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename 0)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename 1)))
-  (is (thrown? java.lang.IllegalArgumentException (test-filename -1)))
+  (is (= (testname-from-filename "src/") '"test/_test.clj"))
   (is
-   (thrown? java.lang.IllegalArgumentException (test-filename true)))
-  (is (= (test-filename "") '"test/_test.clj"))
-  (is (= (test-filename "test/") '"test/test/_test.clj"))
-  (is (= (test-filename "_test.clj") '"test/_test_test.clj"))))
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename -1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename -2)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename -1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename true)))
+  (is (= (testname-from-filename "") '"test/_test.clj"))
+  (is (= (testname-from-filename "test/") '"test/test/_test.clj"))
+  (is (= (testname-from-filename "_test.clj") '"test/_test_test.clj"))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -389,9 +467,9 @@
   (is
    (=
     (packagename-from-filename
-     "Return, as a symbol, the package name associated with this filename. There's\n  probably a better way of doing this.")
+     "Return, as a symbol, an appropiate name for a test file associated with this filename. There's\n  probably a better way of doing this.")
     (symbol
-     "Return, as a symbol, the package name associated with this filename. There's\n  probably a better way of doing this.")))
+     "Return, as a symbol, an appropiate name for a test file associated with this filename. There's\n  probably a better way of doing this.")))
   (is (= (packagename-from-filename "/") (symbol ".")))
   (is (= (packagename-from-filename ".") (symbol ".")))))
 
