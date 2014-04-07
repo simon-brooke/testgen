@@ -44,24 +44,38 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest
- test-write-test
+ test-generate-assertion
  (testing
-  "write-test"
-  (is (thrown? clojure.lang.ArityException (write-test nil)))
-  (is (thrown? clojure.lang.ArityException (write-test ())))
-  (is (thrown? clojure.lang.ArityException (write-test '(a :b "c"))))
-  (is (thrown? clojure.lang.ArityException (write-test true)))
-  (is (thrown? clojure.lang.ArityException (write-test "test")))
-  (is (thrown? clojure.lang.ArityException (write-test :test)))
-  (is (thrown? clojure.lang.ArityException (write-test 0)))
+  "generate-assertion"
+  (is (thrown? clojure.lang.ArityException (generate-assertion nil)))
+  (is (thrown? clojure.lang.ArityException (generate-assertion ())))
   (is
    (thrown?
     clojure.lang.ArityException
-    (write-test Integer/MAX_VALUE)))
-  (is (thrown? clojure.lang.ArityException (write-test 22/7)))
-  (is (thrown? clojure.lang.ArityException (write-test 1.0E-4)))
-  (is (thrown? clojure.lang.ArityException (write-test -1.0E-4)))
-  (is (thrown? clojure.lang.ArityException (write-test generic-args)))))
+    (generate-assertion '(a :b "c"))))
+  (is (thrown? clojure.lang.ArityException (generate-assertion true)))
+  (is
+   (thrown? clojure.lang.ArityException (generate-assertion "test")))
+  (is (thrown? clojure.lang.ArityException (generate-assertion :test)))
+  (is (thrown? clojure.lang.ArityException (generate-assertion 0)))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (generate-assertion Integer/MAX_VALUE)))
+  (is (thrown? clojure.lang.ArityException (generate-assertion 22/7)))
+  (is
+   (thrown? clojure.lang.ArityException (generate-assertion 1.0E-4)))
+  (is
+   (thrown? clojure.lang.ArityException (generate-assertion -1.0E-4)))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (generate-assertion generic-args)))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (generate-assertion
+     "Generate an appropiate assertion for this argument passed to this function")))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -184,23 +198,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest
- test-testgen
+ test-generate-test
  (testing
-  "testgen"
-  (is (thrown? clojure.lang.ArityException (testgen nil)))
-  (is (thrown? clojure.lang.ArityException (testgen ())))
-  (is (thrown? clojure.lang.ArityException (testgen '(a :b "c"))))
-  (is (thrown? clojure.lang.ArityException (testgen true)))
-  (is (thrown? clojure.lang.ArityException (testgen "test")))
-  (is (thrown? clojure.lang.ArityException (testgen :test)))
-  (is (thrown? clojure.lang.ArityException (testgen 0)))
+  "generate-test"
+  (is (thrown? clojure.lang.ArityException (generate-test nil)))
+  (is (thrown? clojure.lang.ArityException (generate-test ())))
   (is
-   (thrown? clojure.lang.ArityException (testgen Integer/MAX_VALUE)))
-  (is (thrown? clojure.lang.ArityException (testgen 22/7)))
-  (is (thrown? clojure.lang.ArityException (testgen 1.0E-4)))
-  (is (thrown? clojure.lang.ArityException (testgen -1.0E-4)))
-  (is (thrown? clojure.lang.ArityException (testgen generic-args)))
-  (is (thrown? clojure.lang.ArityException (testgen "test-")))))
+   (thrown? clojure.lang.ArityException (generate-test '(a :b "c"))))
+  (is (thrown? clojure.lang.ArityException (generate-test true)))
+  (is (thrown? clojure.lang.ArityException (generate-test "test")))
+  (is (thrown? clojure.lang.ArityException (generate-test :test)))
+  (is (thrown? clojure.lang.ArityException (generate-test 0)))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (generate-test Integer/MAX_VALUE)))
+  (is (thrown? clojure.lang.ArityException (generate-test 22/7)))
+  (is (thrown? clojure.lang.ArityException (generate-test 1.0E-4)))
+  (is (thrown? clojure.lang.ArityException (generate-test -1.0E-4)))
+  (is
+   (thrown? clojure.lang.ArityException (generate-test generic-args)))
+  (is (thrown? clojure.lang.ArityException (generate-test "test-")))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -381,28 +399,80 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest
+ test-expr-seq
+ (testing
+  "expr-seq"
+  (is (thrown? java.lang.NullPointerException (expr-seq nil)))
+  (is (thrown? java.lang.ClassCastException (expr-seq ())))
+  (is (thrown? java.lang.ClassCastException (expr-seq '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (expr-seq true)))
+  (is (thrown? java.lang.ClassCastException (expr-seq "test")))
+  (is (thrown? java.lang.ClassCastException (expr-seq :test)))
+  (is (thrown? java.lang.ClassCastException (expr-seq 0)))
+  (is
+   (thrown? java.lang.ClassCastException (expr-seq Integer/MAX_VALUE)))
+  (is (thrown? java.lang.ClassCastException (expr-seq 22/7)))
+  (is (thrown? java.lang.ClassCastException (expr-seq 1.0E-4)))
+  (is (thrown? java.lang.ClassCastException (expr-seq -1.0E-4)))
+  (is (thrown? java.lang.ClassCastException (expr-seq generic-args)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (expr-seq
+     "Returns forms from src (assumed to be Clojure source) as a lazy sequence of expressions")))
+  (is (thrown? java.lang.ClassCastException (expr-seq false)))
+  (is (thrown? java.lang.NullPointerException (expr-seq nil)))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
  test-find-vars-in-reader
  (testing
   "find-vars-in-reader"
-  (is (= (find-vars-in-reader nil) 'nil))
-  (is (= (find-vars-in-reader ()) 'nil))
-  (is (= (find-vars-in-reader '(a :b "c")) 'nil))
-  (is (= (find-vars-in-reader true) 'nil))
-  (is (= (find-vars-in-reader "test") 'nil))
-  (is (= (find-vars-in-reader :test) 'nil))
-  (is (= (find-vars-in-reader 0) 'nil))
-  (is (= (find-vars-in-reader Integer/MAX_VALUE) 'nil))
-  (is (= (find-vars-in-reader 22/7) 'nil))
-  (is (= (find-vars-in-reader 1.0E-4) 'nil))
-  (is (= (find-vars-in-reader -1.0E-4) 'nil))
-  (is (= (find-vars-in-reader generic-args) 'nil))
   (is
-   (=
+   (thrown? java.lang.NullPointerException (find-vars-in-reader nil)))
+  (is (thrown? java.lang.ClassCastException (find-vars-in-reader ())))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (find-vars-in-reader '(a :b "c"))))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader true)))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader "test")))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader :test)))
+  (is (thrown? java.lang.ClassCastException (find-vars-in-reader 0)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (find-vars-in-reader Integer/MAX_VALUE)))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader 22/7)))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (find-vars-in-reader -1.0E-4)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (find-vars-in-reader generic-args)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
     (find-vars-in-reader
-     "Return a list of names of variables declared in the stream this reader reads")
-    'nil))
-  (is (= (find-vars-in-reader nil) 'nil))
-  (is (= (find-vars-in-reader true) 'nil))))
+     "Return a list of names of vars declared in the stream this reader reads")))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader false)))
+  (is
+   (thrown? java.lang.NullPointerException (find-vars-in-reader nil)))
+  (is
+   (thrown? java.lang.NullPointerException (find-vars-in-reader nil)))
+  (is
+   (thrown? java.lang.ClassCastException (find-vars-in-reader true)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -457,7 +527,46 @@
    (thrown?
     java.io.FileNotFoundException
     (find-vars-in-file
-     "Return a list of names of variables declared in the file at this path name")))))
+     "Return a list of names of vars declared in the file at this path name")))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-write-header
+ (testing
+  "write-header"
+  (is (thrown? clojure.lang.ArityException (write-header nil)))
+  (is (thrown? clojure.lang.ArityException (write-header ())))
+  (is (thrown? clojure.lang.ArityException (write-header '(a :b "c"))))
+  (is (thrown? clojure.lang.ArityException (write-header true)))
+  (is (thrown? clojure.lang.ArityException (write-header "test")))
+  (is (thrown? clojure.lang.ArityException (write-header :test)))
+  (is (thrown? clojure.lang.ArityException (write-header 0)))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (write-header Integer/MAX_VALUE)))
+  (is (thrown? clojure.lang.ArityException (write-header 22/7)))
+  (is (thrown? clojure.lang.ArityException (write-header 1.0E-4)))
+  (is (thrown? clojure.lang.ArityException (write-header -1.0E-4)))
+  (is
+   (thrown? clojure.lang.ArityException (write-header generic-args)))
+  (is (thrown? clojure.lang.ArityException (write-header "(ns ")))
+  (is (thrown? clojure.lang.ArityException (write-header "_test\n")))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (write-header "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (write-header " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    clojure.lang.ArityException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -509,26 +618,13 @@
    (thrown?
     java.io.FileNotFoundException
     (generate-tests "Writing to: ")))
-  (is (thrown? java.io.FileNotFoundException (generate-tests "(ns ")))
-  (is
-   (thrown? java.io.FileNotFoundException (generate-tests "_test\n")))
-  (is
-   (thrown?
-    java.io.FileNotFoundException
-    (generate-tests "\t(:require [clojure.test :refer :all]\n\t[")))
-  (is
-   (thrown?
-    java.io.FileNotFoundException
-    (generate-tests " :refer :all]))\n\n")))
-  (is
-   (thrown?
-    java.io.FileNotFoundException
-    (generate-tests
-     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
   (is
    (thrown?
     java.io.FileNotFoundException
     (generate-tests "reading...")))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-tests false)))
+  (is (thrown? java.lang.NullPointerException (generate-tests nil)))
   (is (thrown? java.io.FileNotFoundException (generate-tests "...")))
   (is
    (thrown?
