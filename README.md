@@ -2,6 +2,23 @@
 
 A Clojure library designed to generate charaterisation tests.
 
+### WARNING! Currently broken
+
+In trying to make testgen generate tests for functions of more than one argument, I've broken it. It's not completely broken - it generates interesting and useful tests for simple functions like this:
+
+	(generate-test '(defn n-of [arg n]
+		"Return a list of n instances of arg"
+		(cond
+			(zero? n) nil
+			true (cons arg (n-of arg (dec n))))) '(1 2))
+
+This is clearly very promising behaviour. However, it currently won't eat its own dogfood, failing with:
+
+	user=> (generate-tests "src/testgen/core.clj")
+	IllegalArgumentException Don't know how to create ISeq from: java.lang.Double  clojure.lang.RT.seqFrom (RT.java:505)
+
+I have not yet got to the bottom of this bug :-(
+
 ## What are 'characterisation tests'?
 
 Characterisation tests are a suite of tests which characterise the behaviour of a corpus of code. That is to say, they describe, and test, what it does now, whether that's correct or not. Otherwise, they are like unit tests. In fact, they are unit tests - except that unit tests are normally written to describe the desired behaviour of a corpus of code; these describe the actual behaviour.

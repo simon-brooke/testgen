@@ -1,6 +1,8 @@
 (ns testgen.core
   (:use clojure.java.io
-        clojure.pprint))
+        clojure.pprint
+        clojure.math.combinatorics))
+
 
 (defn maybe-quote [val]
 	"Convert val into a form in which, after being passed through the pretty
@@ -9,8 +11,9 @@
 		(symbol? val) (list 'symbol (str val))
 		true (list 'quote val)))
 
-(defn generate-assertion [fnname & args]
+(defn generate-assertion [fnname args]
   "Generate an appropiate assertion for these arguments passed to this function"
+  (print (str "Generating assertion for " (cons fnname args)))
 	(try
 		(let [val (eval (cons fnname args))]
 		   	(list 'is (list '= (cons fnname args) (maybe-quote val))))
@@ -23,7 +26,9 @@
 		(vector? arg)
 		(map? arg))))
 
-(def generic-args '(nil () (quote (a :b "c")) true "test" :test 0 22/7 0.0001 -0.0001))
+;; (def generic-args '(nil () (quote (a :b "c")) "test" true :test 0 Integer/MAX_VALUE 22/7 0.0001 -0.0001))
+(def generic-args '(nil () (quote (a :b "c")) "test" true :test 0))
+;; (def generic-args nil)
 
 (defn constants [form]
 	"return a list of all elements in this form which are constants"
@@ -48,14 +53,31 @@
 		true (cons arg (n-of arg (dec n)))))
 
 
+;; This version of generate-test tries to generate good tests for functions of one
+;; argument. It works.
+;; (defn generate-test [fndef extra-vars]
+;;   "Generate a test for this function definition"
+;; 	(cond (or (= (first fndef) 'def)(= (first fndef) 'defn))
+;; 		(let [name (first (rest fndef))
+;; 					potential-args (find-interesting-args fndef extra-vars)]
+;; 			 (list 'deftest (symbol (str "test-" name))
+;; 				(concat (list 'testing (str name))
+;; 					(map #(generate-assertion name (list %))  potential-args))))))
+
+;; This version of generate-test tries to generate good tests for functions of one or more than one
+;; argument. Unfortunately, it is borked.
 (defn generate-test [fndef extra-vars]
+  "Generate a test for this function definition"
 	(cond (or (= (first fndef) 'def)(= (first fndef) 'defn))
 		(let [name (first (rest fndef))
 					potential-args (find-interesting-args fndef extra-vars)]
+      (try
 			 (list 'deftest (symbol (str "test-" name))
 				(concat (list 'testing (str name))
 					(map #(generate-assertion name %)
-						(cond (= ))))))
+						(cond (vector? (nth fndef 2)) (apply cartesian-product (n-of potential-args (count (nth fndef 2))))
+                 true (map #(list %) potential-args)))))
+        (catch Exception any)))))
 
 ;; generating a test file
 
