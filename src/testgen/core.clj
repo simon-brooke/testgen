@@ -4,20 +4,34 @@
         clojure.math.combinatorics))
 
 
-(defn maybe-quote [val]
+(defn maybe-quote 
 	"Convert val into a form in which, after being passed through the pretty
 	printer, it will be reconstituted in a form useful to the test"
+ [val]
+ (let [mval (try
+              (macroexpand val)
+              (catch Exception any val))]
 	(cond
-		(symbol? val) (list 'symbol (str val))
-		true (list 'quote val)))
+   (= true val) true
+   (nil? val) nil
+   (number? val) val
+   (string? val) val
+   (keyword? val) val
+   (vector? val) val
+   (map? val) val
+   (symbol? val) (list 'symbol (str val))
+   (and (seq mval) (= (first mval) 'quote)) val
+   true (list 'quote val))))
 
-(defn generate-assertion [fnname args]
+(defn generate-assertion 
   "Generate an appropiate assertion for these arguments passed to this function"
-  (print (str "Generating assertion for " (cons fnname args)))
-	(try
-		(let [val (eval (cons fnname args))]
-		   	(list 'is (list '= (cons fnname args) (maybe-quote val))))
-			  (catch Exception e (list 'is (list 'thrown? (.getClass e) (cons fnname args))))))
+  [fnname args]
+  (let [doc-string (str "Generating assertion for " (cons fnname args))]
+    (try
+      (let [val (eval (cons fnname args))]
+        (list 'is (list '= (cons fnname args) (maybe-quote val)) doc-string))
+      (catch Exception e 
+        (list 'is (list 'thrown? (.getClass e) (cons fnname args)))))))
 
 (defn constant? [arg]
 	(not (or
@@ -36,14 +50,16 @@
 
 (defn find-interesting-args [sexpr extra-vars]
 	"Find things in sexpr which would be even more interesting if passed as arguments to it"
-	(concat generic-args extra-vars
-		(flatten
-			(map
-				#(cond
-					(integer? %) (list % (inc %) (dec %))
-					(number? %) (list % (+ % 0.0001) (- % 0.0001))
-					true %)
-				(constants sexpr)))))
+	(apply list
+        (set
+          (concat generic-args extra-vars
+                  (flatten
+                    (map
+                      #(cond
+                         (integer? %) (list % (inc %) (dec %))
+                         (number? %) (list % (+ % 0.0001) (- % 0.0001))
+                         true %)
+                      (constants sexpr)))))))
 
 
 (defn n-of [arg n]
@@ -55,28 +71,34 @@
 
 ;; This version of generate-test tries to generate good tests for functions of one
 ;; argument. It works.
-;; (defn generate-test [fndef extra-vars]
-;;   "Generate a test for this function definition"
-;; 	(cond (or (= (first fndef) 'def)(= (first fndef) 'defn))
-;; 		(let [name (first (rest fndef))
-;; 					potential-args (find-interesting-args fndef extra-vars)]
-;; 			 (list 'deftest (symbol (str "test-" name))
-;; 				(concat (list 'testing (str name))
-;; 					(map #(generate-assertion name (list %))  potential-args))))))
+(defn generate-test-1 [fndef extra-vars]
+   "Generate a test for this function definition"
+ 	(cond (or (= (first fndef) 'def)(= (first fndef) 'defn))
+ 		(let [name (first (rest fndef))
+ 					potential-args (find-interesting-args fndef extra-vars)]
+ 			 (list 'deftest (symbol (str "test-" name))
+ 				(concat (list 'testing (str name))
+ 					(map #(generate-assertion name (list %))  potential-args))))))
 
 ;; This version of generate-test tries to generate good tests for functions of one or more than one
 ;; argument. Unfortunately, it is borked.
-(defn generate-test [fndef extra-vars]
+(defn generate-test-n [fndef extra-vars]
   "Generate a test for this function definition"
 	(cond (or (= (first fndef) 'def)(= (first fndef) 'defn))
 		(let [name (first (rest fndef))
-					potential-args (find-interesting-args fndef extra-vars)]
+          arg-list (nth fndef 2)
+          potential-args (map maybe-quote (find-interesting-args fndef extra-vars))]
+      (print potential-args)
       (try
-			 (list 'deftest (symbol (str "test-" name))
-				(concat (list 'testing (str name))
-					(map #(generate-assertion name %)
-						(cond (vector? (nth fndef 2)) (apply cartesian-product (n-of potential-args (count (nth fndef 2))))
-                 true (map #(list %) potential-args)))))
+        (list 'deftest (symbol (str "test-" name))
+              (concat (list 'testing (str name))
+                      (map #(generate-assertion name %)
+                           (cond 
+                             (vector? arg-list) 
+                             (apply cartesian-product 
+                                    (n-of potential-args (count arg-list)))
+                             true 
+                             (map #(list %) potential-args)))))
         (catch Exception any)))))
 
 ;; generating a test file
@@ -135,7 +157,7 @@
 (defn generate-tests [filename]
   "Generate a suite of characterisation tests for the file indicated by this filename.
 
-  filename: the file path name of a file containing Clojure code to be tested."
+   * `filename`: the file path name of a file containing Clojure code to be tested."
     (let [fn (clean-filename filename)
           pn (packagename-from-filename filename)
 					extra-vars (find-vars-in-file filename)]
@@ -150,12 +172,16 @@
 				(while (.ready eddi)
           (println "reading...")
           (let [form (read eddi false nil)]
-            (cond (= (first form) 'defn)
+            (try
+              (cond (= (first form) 'defn)
                   (do
                     (println (first (rest form)) "...")
-                    (pprint (generate-test form extra-vars) dickens)
+                    (pprint (generate-test-n form extra-vars) dickens)
                     (.write dickens "\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\n")
-                    ))))
+                    ))
+              (catch Exception any
+                (.write dickens 
+                  "\n\n;; ERROR while attempting to generate\n\n")))))
 				(.write dickens "\n\n;; end of file ;;\n\n")
 				(.flush dickens))))
 

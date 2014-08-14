@@ -7,17 +7,35 @@
 (deftest
  test-maybe-quote
  (testing
-  "maybe-quote"Generating assertion for (maybe-quote generic-args)
+  "maybe-quote"
   (is
-   (=
-    (maybe-quote generic-args)
-    ''nil))Generating assertion for (maybe-quote "Convert val into a form in which, after being passed through the pretty\n\tprinter, it will be reconstituted in a form useful to the test")
+   (= (maybe-quote nil) nil)
+   "Generating assertion for (maybe-quote nil)")
+  (is (= (maybe-quote 0) 0) "Generating assertion for (maybe-quote 0)")
+  (is
+   (= (maybe-quote '()) '())
+   "Generating assertion for (maybe-quote (quote ()))")
+  (is
+   (= (maybe-quote '(a :b "c")) '(a :b "c"))
+   "Generating assertion for (maybe-quote (quote (a :b \"c\")))")
   (is
    (=
     (maybe-quote
      "Convert val into a form in which, after being passed through the pretty\n\tprinter, it will be reconstituted in a form useful to the test")
-    ''"Convert val into a form in which, after being passed through the pretty\n\tprinter, it will be reconstituted in a form useful to the test"))Generating assertion for (maybe-quote true)
-  (is (= (maybe-quote true) ''true))))
+    "Convert val into a form in which, after being passed through the pretty\n\tprinter, it will be reconstituted in a form useful to the test")
+   "Generating assertion for (maybe-quote \"Convert val into a form in which, after being passed through the pretty\\n\\tprinter, it will be reconstituted in a form useful to the test\")")
+  (is
+   (= (maybe-quote :test) :test)
+   "Generating assertion for (maybe-quote :test)")
+  (is
+   (= (maybe-quote (symbol "generic-args")) '(symbol "generic-args"))
+   "Generating assertion for (maybe-quote (symbol \"generic-args\"))")
+  (is
+   (= (maybe-quote true) true)
+   "Generating assertion for (maybe-quote true)")
+  (is
+   (= (maybe-quote "test") "test")
+   "Generating assertion for (maybe-quote \"test\")")))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,385 +43,31 @@
 (deftest
  test-generate-assertion
  (testing
-  "generate-assertion"Generating assertion for (generate-assertion generic-args generic-args)Generating assertion for (nil)
+  "generate-assertion"
+  (is (thrown? clojure.lang.ArityException (generate-assertion nil)))
+  (is (thrown? clojure.lang.ArityException (generate-assertion 0)))
+  (is (thrown? clojure.lang.ArityException (generate-assertion '())))
   (is
-   (=
-    (generate-assertion generic-args generic-args)
-    '(is
-      (thrown?
-       clojure.lang.Compiler$CompilerException
-       (nil)))))Generating assertion for (generate-assertion generic-args "Generate an appropiate assertion for these arguments passed to this function")Generating assertion for (nil \G \e \n \e \r \a \t \e \space \a \n \space \a \p \p \r \o \p \i \a \t \e \space \a \s \s \e \r \t \i \o \n \space \f \o \r \space \t \h \e \s \e \space \a \r \g \u \m \e \n \t \s \space \p \a \s \s \e \d \space \t \o \space \t \h \i \s \space \f \u \n \c \t \i \o \n)
+   (thrown?
+    clojure.lang.ArityException
+    (generate-assertion '(a :b "c"))))
   (is
-   (=
+   (thrown?
+    clojure.lang.ArityException
+    (generate-assertion "Generating assertion for ")))
+  (is (thrown? clojure.lang.ArityException (generate-assertion :test)))
+  (is
+   (thrown?
+    clojure.lang.ArityException
     (generate-assertion
-     generic-args
-     "Generate an appropiate assertion for these arguments passed to this function")
-    '(is
-      (thrown?
-       clojure.lang.Compiler$CompilerException
-       (nil
-        \G
-        \e
-        \n
-        \e
-        \r
-        \a
-        \t
-        \e
-        \space
-        \a
-        \n
-        \space
-        \a
-        \p
-        \p
-        \r
-        \o
-        \p
-        \i
-        \a
-        \t
-        \e
-        \space
-        \a
-        \s
-        \s
-        \e
-        \r
-        \t
-        \i
-        \o
-        \n
-        \space
-        \f
-        \o
-        \r
-        \space
-        \t
-        \h
-        \e
-        \s
-        \e
-        \space
-        \a
-        \r
-        \g
-        \u
-        \m
-        \e
-        \n
-        \t
-        \s
-        \space
-        \p
-        \a
-        \s
-        \s
-        \e
-        \d
-        \space
-        \t
-        \o
-        \space
-        \t
-        \h
-        \i
-        \s
-        \space
-        \f
-        \u
-        \n
-        \c
-        \t
-        \i
-        \o
-        \n)))))Generating assertion for (generate-assertion generic-args "Generating assertion for ")Generating assertion for (nil \G \e \n \e \r \a \t \i \n \g \space \a \s \s \e \r \t \i \o \n \space \f \o \r \space)
+     "Generate an appropiate assertion for these arguments passed to this function")))
   (is
-   (=
-    (generate-assertion generic-args "Generating assertion for ")
-    '(is
-      (thrown?
-       clojure.lang.Compiler$CompilerException
-       (nil
-        \G
-        \e
-        \n
-        \e
-        \r
-        \a
-        \t
-        \i
-        \n
-        \g
-        \space
-        \a
-        \s
-        \s
-        \e
-        \r
-        \t
-        \i
-        \o
-        \n
-        \space
-        \f
-        \o
-        \r
-        \space)))))Generating assertion for (generate-assertion "Generate an appropiate assertion for these arguments passed to this function" generic-args)Generating assertion for ("Generate an appropiate assertion for these arguments passed to this function")
+   (thrown?
+    clojure.lang.ArityException
+    (generate-assertion (symbol "generic-args"))))
+  (is (thrown? clojure.lang.ArityException (generate-assertion true)))
   (is
-   (=
-    (generate-assertion
-     "Generate an appropiate assertion for these arguments passed to this function"
-     generic-args)
-    '(is
-      (thrown?
-       java.lang.ClassCastException
-       ("Generate an appropiate assertion for these arguments passed to this function")))))Generating assertion for (generate-assertion "Generate an appropiate assertion for these arguments passed to this function" "Generate an appropiate assertion for these arguments passed to this function")Generating assertion for ("Generate an appropiate assertion for these arguments passed to this function" \G \e \n \e \r \a \t \e \space \a \n \space \a \p \p \r \o \p \i \a \t \e \space \a \s \s \e \r \t \i \o \n \space \f \o \r \space \t \h \e \s \e \space \a \r \g \u \m \e \n \t \s \space \p \a \s \s \e \d \space \t \o \space \t \h \i \s \space \f \u \n \c \t \i \o \n)
-  (is
-   (=
-    (generate-assertion
-     "Generate an appropiate assertion for these arguments passed to this function"
-     "Generate an appropiate assertion for these arguments passed to this function")
-    '(is
-      (thrown?
-       java.lang.ClassCastException
-       ("Generate an appropiate assertion for these arguments passed to this function"
-        \G
-        \e
-        \n
-        \e
-        \r
-        \a
-        \t
-        \e
-        \space
-        \a
-        \n
-        \space
-        \a
-        \p
-        \p
-        \r
-        \o
-        \p
-        \i
-        \a
-        \t
-        \e
-        \space
-        \a
-        \s
-        \s
-        \e
-        \r
-        \t
-        \i
-        \o
-        \n
-        \space
-        \f
-        \o
-        \r
-        \space
-        \t
-        \h
-        \e
-        \s
-        \e
-        \space
-        \a
-        \r
-        \g
-        \u
-        \m
-        \e
-        \n
-        \t
-        \s
-        \space
-        \p
-        \a
-        \s
-        \s
-        \e
-        \d
-        \space
-        \t
-        \o
-        \space
-        \t
-        \h
-        \i
-        \s
-        \space
-        \f
-        \u
-        \n
-        \c
-        \t
-        \i
-        \o
-        \n)))))Generating assertion for (generate-assertion "Generate an appropiate assertion for these arguments passed to this function" "Generating assertion for ")Generating assertion for ("Generate an appropiate assertion for these arguments passed to this function" \G \e \n \e \r \a \t \i \n \g \space \a \s \s \e \r \t \i \o \n \space \f \o \r \space)
-  (is
-   (=
-    (generate-assertion
-     "Generate an appropiate assertion for these arguments passed to this function"
-     "Generating assertion for ")
-    '(is
-      (thrown?
-       java.lang.ClassCastException
-       ("Generate an appropiate assertion for these arguments passed to this function"
-        \G
-        \e
-        \n
-        \e
-        \r
-        \a
-        \t
-        \i
-        \n
-        \g
-        \space
-        \a
-        \s
-        \s
-        \e
-        \r
-        \t
-        \i
-        \o
-        \n
-        \space
-        \f
-        \o
-        \r
-        \space)))))Generating assertion for (generate-assertion "Generating assertion for " generic-args)Generating assertion for ("Generating assertion for ")
-  (is
-   (=
-    (generate-assertion "Generating assertion for " generic-args)
-    '(is
-      (thrown?
-       java.lang.ClassCastException
-       ("Generating assertion for ")))))Generating assertion for (generate-assertion "Generating assertion for " "Generate an appropiate assertion for these arguments passed to this function")Generating assertion for ("Generating assertion for " \G \e \n \e \r \a \t \e \space \a \n \space \a \p \p \r \o \p \i \a \t \e \space \a \s \s \e \r \t \i \o \n \space \f \o \r \space \t \h \e \s \e \space \a \r \g \u \m \e \n \t \s \space \p \a \s \s \e \d \space \t \o \space \t \h \i \s \space \f \u \n \c \t \i \o \n)
-  (is
-   (=
-    (generate-assertion
-     "Generating assertion for "
-     "Generate an appropiate assertion for these arguments passed to this function")
-    '(is
-      (thrown?
-       java.lang.ClassCastException
-       ("Generating assertion for "
-        \G
-        \e
-        \n
-        \e
-        \r
-        \a
-        \t
-        \e
-        \space
-        \a
-        \n
-        \space
-        \a
-        \p
-        \p
-        \r
-        \o
-        \p
-        \i
-        \a
-        \t
-        \e
-        \space
-        \a
-        \s
-        \s
-        \e
-        \r
-        \t
-        \i
-        \o
-        \n
-        \space
-        \f
-        \o
-        \r
-        \space
-        \t
-        \h
-        \e
-        \s
-        \e
-        \space
-        \a
-        \r
-        \g
-        \u
-        \m
-        \e
-        \n
-        \t
-        \s
-        \space
-        \p
-        \a
-        \s
-        \s
-        \e
-        \d
-        \space
-        \t
-        \o
-        \space
-        \t
-        \h
-        \i
-        \s
-        \space
-        \f
-        \u
-        \n
-        \c
-        \t
-        \i
-        \o
-        \n)))))Generating assertion for (generate-assertion "Generating assertion for " "Generating assertion for ")Generating assertion for ("Generating assertion for " \G \e \n \e \r \a \t \i \n \g \space \a \s \s \e \r \t \i \o \n \space \f \o \r \space)
-  (is
-   (=
-    (generate-assertion
-     "Generating assertion for "
-     "Generating assertion for ")
-    '(is
-      (thrown?
-       java.lang.ClassCastException
-       ("Generating assertion for "
-        \G
-        \e
-        \n
-        \e
-        \r
-        \a
-        \t
-        \i
-        \n
-        \g
-        \space
-        \a
-        \s
-        \s
-        \e
-        \r
-        \t
-        \i
-        \o
-        \n
-        \space
-        \f
-        \o
-        \r
-        \space)))))))
+   (thrown? clojure.lang.ArityException (generate-assertion "test")))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -411,8 +75,29 @@
 (deftest
  test-constant?
  (testing
-  "constant?"Generating assertion for (constant? generic-args)
-  (is (= (constant? generic-args) 'true))))
+  "constant?"
+  (is
+   (= (constant? nil) true)
+   "Generating assertion for (constant? nil)")
+  (is (= (constant? 0) true) "Generating assertion for (constant? 0)")
+  (is (thrown? java.lang.IllegalArgumentException (constant? '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (constant? '(a :b "c"))))
+  (is
+   (= (constant? :test) true)
+   "Generating assertion for (constant? :test)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (constant? (symbol "generic-args"))))
+  (is
+   (= (constant? true) true)
+   "Generating assertion for (constant? true)")
+  (is
+   (= (constant? "test") true)
+   "Generating assertion for (constant? \"test\")")))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -420,16 +105,35 @@
 (deftest
  test-constants
  (testing
-  "constants"Generating assertion for (constants generic-args)
+  "constants"
   (is
-   (=
-    (constants generic-args)
-    '()))Generating assertion for (constants "return a list of all elements in this form which are constants")
+   (= (constants nil) '())
+   "Generating assertion for (constants nil)")
+  (is (= (constants 0) '()) "Generating assertion for (constants 0)")
+  (is
+   (= (constants '()) '())
+   "Generating assertion for (constants (quote ()))")
+  (is
+   (= (constants '(a :b "c")) '(:b "c"))
+   "Generating assertion for (constants (quote (a :b \"c\")))")
+  (is
+   (= (constants :test) '())
+   "Generating assertion for (constants :test)")
+  (is
+   (= (constants (symbol "generic-args")) '())
+   "Generating assertion for (constants (symbol \"generic-args\"))")
+  (is
+   (= (constants true) '())
+   "Generating assertion for (constants true)")
+  (is
+   (= (constants "test") '())
+   "Generating assertion for (constants \"test\")")
   (is
    (=
     (constants
      "return a list of all elements in this form which are constants")
-    '()))))
+    '())
+   "Generating assertion for (constants \"return a list of all elements in this form which are constants\")")))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -437,100 +141,3252 @@
 (deftest
  test-find-interesting-args
  (testing
-  "find-interesting-args"Generating assertion for (find-interesting-args generic-args generic-args)
+  "find-interesting-args"
   (is
    (=
-    (find-interesting-args generic-args generic-args)
-    '()))Generating assertion for (find-interesting-args generic-args "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    (find-interesting-args nil nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args nil nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil 0.0)))
+  (is
+   (=
+    (find-interesting-args nil '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args nil (quote ()))")
   (is
    (=
     (find-interesting-args
-     generic-args
+     nil
      "Find things in sexpr which would be even more interesting if passed as arguments to it")
-    '(\F
-      \i
-      \n
-      \d
+    '(nil
+      0
       \space
-      \t
-      \h
-      \i
-      \n
-      \g
-      \s
-      \space
-      \i
-      \n
-      \space
-      \s
-      \e
-      \x
-      \p
-      \r
-      \space
-      \w
-      \h
-      \i
-      \c
-      \h
-      \space
-      \w
-      \o
-      \u
-      \l
-      \d
-      \space
+      ()
+      \a
       \b
-      \e
-      \space
-      \e
-      \v
-      \e
-      \n
-      \space
-      \m
-      \o
-      \r
-      \e
-      \space
-      \i
-      \n
-      \t
-      \e
-      \r
-      \e
-      \s
-      \t
-      \i
-      \n
-      \g
-      \space
-      \i
-      \f
-      \space
-      \p
-      \a
-      \s
-      \s
-      \e
+      \c
+      '(a :b "c")
       \d
-      \space
-      \a
-      \s
-      \space
-      \a
-      \r
-      \g
-      \u
-      \m
       \e
-      \n
-      \t
-      \s
-      \space
-      \t
-      \o
-      \space
+      \F
+      \f
+      \g
+      \h
+      :test
       \i
-      \t)))Generating assertion for (find-interesting-args generic-args 1.0E-4)
-  
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args nil \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args nil '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args nil (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args nil 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args nil "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args nil \"test\")")
+  (is
+   (=
+    (find-interesting-args 0 nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 0 nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 0.0)))
+  (is
+   (=
+    (find-interesting-args 0 '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 0 (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     0
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args 0 \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args 0 '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args 0 (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args 0 "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args 0 \"test\")")
+  (is
+   (=
+    (find-interesting-args 0.0 nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 0.0 nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 0.0)))
+  (is
+   (=
+    (find-interesting-args 0.0 '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 0.0 (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     0.0
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args 0.0 \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args 0.0 '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args 0.0 (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 0.0 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args 0.0 "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args 0.0 \"test\")")
+  (is
+   (=
+    (find-interesting-args '() nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args (quote ()) nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() 0.0)))
+  (is
+   (=
+    (find-interesting-args '() '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args (quote ()) (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     '()
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args (quote ()) \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args '() '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args (quote ()) (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '() 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args '() "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args (quote ()) \"test\")")
+  (is
+   (=
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args \"Find things in sexpr which would be even more interesting if passed as arguments to it\" nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     0.0)))
+  (is
+   (=
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args \"Find things in sexpr which would be even more interesting if passed as arguments to it\" (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args \"Find things in sexpr which would be even more interesting if passed as arguments to it\" \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args \"Find things in sexpr which would be even more interesting if passed as arguments to it\" (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     2.0E-4)))
+  (is
+   (=
+    (find-interesting-args
+     "Find things in sexpr which would be even more interesting if passed as arguments to it"
+     "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args \"Find things in sexpr which would be even more interesting if passed as arguments to it\" \"test\")")
+  (is
+   (=
+    (find-interesting-args '(a :b "c") nil)
+    '(nil 0 () "c" '(a :b "c") :test :b true "test"))
+   "Generating assertion for (find-interesting-args (quote (a :b \"c\")) nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") 0.0)))
+  (is
+   (=
+    (find-interesting-args '(a :b "c") '())
+    '(nil 0 () "c" '(a :b "c") :test :b true "test"))
+   "Generating assertion for (find-interesting-args (quote (a :b \"c\")) (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     '(a :b "c")
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      "c"
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      :b
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args (quote (a :b \"c\")) \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args '(a :b "c") '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args (quote (a :b \"c\")) (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args '(a :b "c") 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args '(a :b "c") "test")
+    '(nil 0 () "c" '(a :b "c") \e :test :b true "test" \s \t))
+   "Generating assertion for (find-interesting-args (quote (a :b \"c\")) \"test\")")
+  (is
+   (=
+    (find-interesting-args :test nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args :test nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test 0.0)))
+  (is
+   (=
+    (find-interesting-args :test '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args :test (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     :test
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args :test \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args :test '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args :test (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args :test 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args :test "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args :test \"test\")")
+  (is
+   (=
+    (find-interesting-args (symbol "generic-args") nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args (symbol \"generic-args\") nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args (symbol "generic-args") 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args (symbol "generic-args") 0.0)))
+  (is
+   (=
+    (find-interesting-args (symbol "generic-args") '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args (symbol \"generic-args\") (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     (symbol "generic-args")
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args (symbol \"generic-args\") \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args (symbol "generic-args") '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args (symbol \"generic-args\") (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args (symbol "generic-args") :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args
+     (symbol "generic-args")
+     (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args (symbol "generic-args") true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args (symbol "generic-args") 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args (symbol "generic-args") 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args (symbol "generic-args") "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args (symbol \"generic-args\") \"test\")")
+  (is
+   (=
+    (find-interesting-args true nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args true nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true 0.0)))
+  (is
+   (=
+    (find-interesting-args true '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args true (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     true
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args true \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args true '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args true (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args true 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args true "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args true \"test\")")
+  (is
+   (=
+    (find-interesting-args 1.0E-4 nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 1.0E-4 nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 0.0)))
+  (is
+   (=
+    (find-interesting-args 1.0E-4 '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 1.0E-4 (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     1.0E-4
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args 1.0E-4 \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args 1.0E-4 '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args 1.0E-4 (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 1.0E-4 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args 1.0E-4 "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args 1.0E-4 \"test\")")
+  (is
+   (=
+    (find-interesting-args 2.0E-4 nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 2.0E-4 nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 0.0)))
+  (is
+   (=
+    (find-interesting-args 2.0E-4 '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args 2.0E-4 (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     2.0E-4
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args 2.0E-4 \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args 2.0E-4 '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args 2.0E-4 (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args 2.0E-4 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args 2.0E-4 "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args 2.0E-4 \"test\")")
+  (is
+   (=
+    (find-interesting-args "test" nil)
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args \"test\" nil)")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" 0.0)))
+  (is
+   (=
+    (find-interesting-args "test" '())
+    '(nil 0 () '(a :b "c") :test true "test"))
+   "Generating assertion for (find-interesting-args \"test\" (quote ()))")
+  (is
+   (=
+    (find-interesting-args
+     "test"
+     "Find things in sexpr which would be even more interesting if passed as arguments to it")
+    '(nil
+      0
+      \space
+      ()
+      \a
+      \b
+      \c
+      '(a :b "c")
+      \d
+      \e
+      \F
+      \f
+      \g
+      \h
+      :test
+      \i
+      \l
+      \m
+      \n
+      \o
+      true
+      \p
+      \r
+      "test"
+      \s
+      \t
+      \u
+      \v
+      \w
+      \x))
+   "Generating assertion for (find-interesting-args \"test\" \"Find things in sexpr which would be even more interesting if passed as arguments to it\")")
+  (is
+   (=
+    (find-interesting-args "test" '(a :b "c"))
+    '(nil 0 () "c" '(a :b "c") :test :b true a "test"))
+   "Generating assertion for (find-interesting-args \"test\" (quote (a :b \"c\")))")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" 1.0E-4)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-interesting-args "test" 2.0E-4)))
+  (is
+   (=
+    (find-interesting-args "test" "test")
+    '(nil 0 () '(a :b "c") \e :test true "test" \s \t))
+   "Generating assertion for (find-interesting-args \"test\" \"test\")")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-n-of
+ (testing
+  "n-of"
+  (is (thrown? java.lang.NullPointerException (n-of nil nil)))
+  (is (= (n-of nil 0) nil) "Generating assertion for (n-of nil 0)")
+  (is (thrown? java.lang.ClassCastException (n-of nil '())))
+  (is (thrown? java.lang.ClassCastException (n-of nil '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of nil :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of nil (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of nil true)))
+  (is (thrown? java.lang.ClassCastException (n-of nil "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of nil "Return a list of n instances of arg")))
+  (is (thrown? java.lang.NullPointerException (n-of 0 nil)))
+  (is (= (n-of 0 0) nil) "Generating assertion for (n-of 0 0)")
+  (is (thrown? java.lang.ClassCastException (n-of 0 '())))
+  (is (thrown? java.lang.ClassCastException (n-of 0 '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of 0 :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of 0 (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of 0 true)))
+  (is (thrown? java.lang.ClassCastException (n-of 0 "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of 0 "Return a list of n instances of arg")))
+  (is (thrown? java.lang.NullPointerException (n-of '() nil)))
+  (is
+   (= (n-of '() 0) nil)
+   "Generating assertion for (n-of (quote ()) 0)")
+  (is (thrown? java.lang.ClassCastException (n-of '() '())))
+  (is (thrown? java.lang.ClassCastException (n-of '() '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of '() :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of '() (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of '() true)))
+  (is (thrown? java.lang.ClassCastException (n-of '() "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of '() "Return a list of n instances of arg")))
+  (is (thrown? java.lang.NullPointerException (n-of '(a :b "c") nil)))
+  (is
+   (= (n-of '(a :b "c") 0) nil)
+   "Generating assertion for (n-of (quote (a :b \"c\")) 0)")
+  (is (thrown? java.lang.ClassCastException (n-of '(a :b "c") '())))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of '(a :b "c") '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of '(a :b "c") :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of '(a :b "c") (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of '(a :b "c") true)))
+  (is (thrown? java.lang.ClassCastException (n-of '(a :b "c") "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of '(a :b "c") "Return a list of n instances of arg")))
+  (is (thrown? java.lang.NullPointerException (n-of :test nil)))
+  (is (= (n-of :test 0) nil) "Generating assertion for (n-of :test 0)")
+  (is (thrown? java.lang.ClassCastException (n-of :test '())))
+  (is (thrown? java.lang.ClassCastException (n-of :test '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of :test :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of :test (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of :test true)))
+  (is (thrown? java.lang.ClassCastException (n-of :test "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of :test "Return a list of n instances of arg")))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (n-of (symbol "generic-args") nil)))
+  (is
+   (= (n-of (symbol "generic-args") 0) nil)
+   "Generating assertion for (n-of (symbol \"generic-args\") 0)")
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of (symbol "generic-args") '())))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of (symbol "generic-args") '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of (symbol "generic-args") :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of (symbol "generic-args") (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of (symbol "generic-args") true)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of (symbol "generic-args") "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of
+     (symbol "generic-args")
+     "Return a list of n instances of arg")))
+  (is (thrown? java.lang.NullPointerException (n-of true nil)))
+  (is (= (n-of true 0) nil) "Generating assertion for (n-of true 0)")
+  (is (thrown? java.lang.ClassCastException (n-of true '())))
+  (is (thrown? java.lang.ClassCastException (n-of true '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of true :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of true (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of true true)))
+  (is (thrown? java.lang.ClassCastException (n-of true "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of true "Return a list of n instances of arg")))
+  (is (thrown? java.lang.NullPointerException (n-of "test" nil)))
+  (is
+   (= (n-of "test" 0) nil)
+   "Generating assertion for (n-of \"test\" 0)")
+  (is (thrown? java.lang.ClassCastException (n-of "test" '())))
+  (is (thrown? java.lang.ClassCastException (n-of "test" '(a :b "c"))))
+  (is (thrown? java.lang.ClassCastException (n-of "test" :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "test" (symbol "generic-args"))))
+  (is (thrown? java.lang.ClassCastException (n-of "test" true)))
+  (is (thrown? java.lang.ClassCastException (n-of "test" "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "test" "Return a list of n instances of arg")))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (n-of "Return a list of n instances of arg" nil)))
+  (is
+   (= (n-of "Return a list of n instances of arg" 0) nil)
+   "Generating assertion for (n-of \"Return a list of n instances of arg\" 0)")
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "Return a list of n instances of arg" '())))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "Return a list of n instances of arg" '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "Return a list of n instances of arg" :test)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of
+     "Return a list of n instances of arg"
+     (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "Return a list of n instances of arg" true)))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of "Return a list of n instances of arg" "test")))
+  (is
+   (thrown?
+    java.lang.ClassCastException
+    (n-of
+     "Return a list of n instances of arg"
+     "Return a list of n instances of arg")))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-generate-test-1
+ (testing
+  "generate-test-1"
+  (is
+   (= (generate-test-1 nil nil) nil)
+   "Generating assertion for (generate-test-1 nil nil)")
+  (is
+   (= (generate-test-1 nil 0) nil)
+   "Generating assertion for (generate-test-1 nil 0)")
+  (is
+   (= (generate-test-1 nil '()) nil)
+   "Generating assertion for (generate-test-1 nil (quote ()))")
+  (is
+   (= (generate-test-1 nil '(a :b "c")) nil)
+   "Generating assertion for (generate-test-1 nil (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-1 nil :test) nil)
+   "Generating assertion for (generate-test-1 nil :test)")
+  (is
+   (= (generate-test-1 nil (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-1 nil (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-1 nil true) nil)
+   "Generating assertion for (generate-test-1 nil true)")
+  (is
+   (= (generate-test-1 nil "test") nil)
+   "Generating assertion for (generate-test-1 nil \"test\")")
+  (is
+   (=
+    (generate-test-1
+     nil
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-1 nil \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-1 nil "test-") nil)
+   "Generating assertion for (generate-test-1 nil \"test-\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-1 0 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1
+     0
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 0 "test-")))
+  (is
+   (= (generate-test-1 '() nil) nil)
+   "Generating assertion for (generate-test-1 (quote ()) nil)")
+  (is
+   (= (generate-test-1 '() 0) nil)
+   "Generating assertion for (generate-test-1 (quote ()) 0)")
+  (is
+   (= (generate-test-1 '() '()) nil)
+   "Generating assertion for (generate-test-1 (quote ()) (quote ()))")
+  (is
+   (= (generate-test-1 '() '(a :b "c")) nil)
+   "Generating assertion for (generate-test-1 (quote ()) (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-1 '() :test) nil)
+   "Generating assertion for (generate-test-1 (quote ()) :test)")
+  (is
+   (= (generate-test-1 '() (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-1 (quote ()) (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-1 '() true) nil)
+   "Generating assertion for (generate-test-1 (quote ()) true)")
+  (is
+   (= (generate-test-1 '() "test") nil)
+   "Generating assertion for (generate-test-1 (quote ()) \"test\")")
+  (is
+   (=
+    (generate-test-1
+     '()
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-1 (quote ()) \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-1 '() "test-") nil)
+   "Generating assertion for (generate-test-1 (quote ()) \"test-\")")
+  (is
+   (= (generate-test-1 '(a :b "c") nil) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) nil)")
+  (is
+   (= (generate-test-1 '(a :b "c") 0) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) 0)")
+  (is
+   (= (generate-test-1 '(a :b "c") '()) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) (quote ()))")
+  (is
+   (= (generate-test-1 '(a :b "c") '(a :b "c")) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-1 '(a :b "c") :test) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) :test)")
+  (is
+   (= (generate-test-1 '(a :b "c") (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-1 '(a :b "c") true) nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) true)")
+  (is
+   (= (generate-test-1 '(a :b "c") "test") nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) \"test\")")
+  (is
+   (=
+    (generate-test-1
+     '(a :b "c")
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-1 '(a :b "c") "test-") nil)
+   "Generating assertion for (generate-test-1 (quote (a :b \"c\")) \"test-\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1
+     :test
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 :test "test-")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1
+     (symbol "generic-args")
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 (symbol "generic-args") "test-")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1
+     true
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-1 true "test-")))
+  (is
+   (= (generate-test-1 "test" nil) nil)
+   "Generating assertion for (generate-test-1 \"test\" nil)")
+  (is
+   (= (generate-test-1 "test" 0) nil)
+   "Generating assertion for (generate-test-1 \"test\" 0)")
+  (is
+   (= (generate-test-1 "test" '()) nil)
+   "Generating assertion for (generate-test-1 \"test\" (quote ()))")
+  (is
+   (= (generate-test-1 "test" '(a :b "c")) nil)
+   "Generating assertion for (generate-test-1 \"test\" (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-1 "test" :test) nil)
+   "Generating assertion for (generate-test-1 \"test\" :test)")
+  (is
+   (= (generate-test-1 "test" (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-1 \"test\" (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-1 "test" true) nil)
+   "Generating assertion for (generate-test-1 \"test\" true)")
+  (is
+   (= (generate-test-1 "test" "test") nil)
+   "Generating assertion for (generate-test-1 \"test\" \"test\")")
+  (is
+   (=
+    (generate-test-1
+     "test"
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-1 \"test\" \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-1 "test" "test-") nil)
+   "Generating assertion for (generate-test-1 \"test\" \"test-\")")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     nil)
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" nil)")
+  (is
+   (=
+    (generate-test-1 "Generate a test for this function definition" 0)
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" 0)")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     '())
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" (quote ()))")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     '(a :b "c"))
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" (quote (a :b \"c\")))")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     :test)
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" :test)")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     (symbol "generic-args"))
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" (symbol \"generic-args\"))")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     true)
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" true)")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     "test")
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" \"test\")")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" \"Generate a test for this function definition\")")
+  (is
+   (=
+    (generate-test-1
+     "Generate a test for this function definition"
+     "test-")
+    nil)
+   "Generating assertion for (generate-test-1 \"Generate a test for this function definition\" \"test-\")")
+  (is
+   (= (generate-test-1 "test-" nil) nil)
+   "Generating assertion for (generate-test-1 \"test-\" nil)")
+  (is
+   (= (generate-test-1 "test-" 0) nil)
+   "Generating assertion for (generate-test-1 \"test-\" 0)")
+  (is
+   (= (generate-test-1 "test-" '()) nil)
+   "Generating assertion for (generate-test-1 \"test-\" (quote ()))")
+  (is
+   (= (generate-test-1 "test-" '(a :b "c")) nil)
+   "Generating assertion for (generate-test-1 \"test-\" (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-1 "test-" :test) nil)
+   "Generating assertion for (generate-test-1 \"test-\" :test)")
+  (is
+   (= (generate-test-1 "test-" (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-1 \"test-\" (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-1 "test-" true) nil)
+   "Generating assertion for (generate-test-1 \"test-\" true)")
+  (is
+   (= (generate-test-1 "test-" "test") nil)
+   "Generating assertion for (generate-test-1 \"test-\" \"test\")")
+  (is
+   (=
+    (generate-test-1
+     "test-"
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-1 \"test-\" \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-1 "test-" "test-") nil)
+   "Generating assertion for (generate-test-1 \"test-\" \"test-\")")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-generate-test-n
+ (testing
+  "generate-test-n"
+  (is
+   (= (generate-test-n nil nil) nil)
+   "Generating assertion for (generate-test-n nil nil)")
+  (is
+   (= (generate-test-n nil 0) nil)
+   "Generating assertion for (generate-test-n nil 0)")
+  (is
+   (= (generate-test-n nil '()) nil)
+   "Generating assertion for (generate-test-n nil (quote ()))")
+  (is
+   (= (generate-test-n nil 1) nil)
+   "Generating assertion for (generate-test-n nil 1)")
+  (is
+   (= (generate-test-n nil 2) nil)
+   "Generating assertion for (generate-test-n nil 2)")
+  (is
+   (= (generate-test-n nil 3) nil)
+   "Generating assertion for (generate-test-n nil 3)")
+  (is
+   (= (generate-test-n nil '(a :b "c")) nil)
+   "Generating assertion for (generate-test-n nil (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-n nil :test) nil)
+   "Generating assertion for (generate-test-n nil :test)")
+  (is
+   (= (generate-test-n nil (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-n nil (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-n nil true) nil)
+   "Generating assertion for (generate-test-n nil true)")
+  (is
+   (= (generate-test-n nil "test") nil)
+   "Generating assertion for (generate-test-n nil \"test\")")
+  (is
+   (=
+    (generate-test-n
+     nil
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-n nil \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-n nil "test-") nil)
+   "Generating assertion for (generate-test-n nil \"test-\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 0 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 '())))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 0 1)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 0 2)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 0 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     0
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 0 "test-")))
+  (is
+   (= (generate-test-n '() nil) nil)
+   "Generating assertion for (generate-test-n (quote ()) nil)")
+  (is
+   (= (generate-test-n '() 0) nil)
+   "Generating assertion for (generate-test-n (quote ()) 0)")
+  (is
+   (= (generate-test-n '() '()) nil)
+   "Generating assertion for (generate-test-n (quote ()) (quote ()))")
+  (is
+   (= (generate-test-n '() 1) nil)
+   "Generating assertion for (generate-test-n (quote ()) 1)")
+  (is
+   (= (generate-test-n '() 2) nil)
+   "Generating assertion for (generate-test-n (quote ()) 2)")
+  (is
+   (= (generate-test-n '() 3) nil)
+   "Generating assertion for (generate-test-n (quote ()) 3)")
+  (is
+   (= (generate-test-n '() '(a :b "c")) nil)
+   "Generating assertion for (generate-test-n (quote ()) (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-n '() :test) nil)
+   "Generating assertion for (generate-test-n (quote ()) :test)")
+  (is
+   (= (generate-test-n '() (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-n (quote ()) (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-n '() true) nil)
+   "Generating assertion for (generate-test-n (quote ()) true)")
+  (is
+   (= (generate-test-n '() "test") nil)
+   "Generating assertion for (generate-test-n (quote ()) \"test\")")
+  (is
+   (=
+    (generate-test-n
+     '()
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-n (quote ()) \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-n '() "test-") nil)
+   "Generating assertion for (generate-test-n (quote ()) \"test-\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 1 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 '())))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 1 1)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 1 2)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 1 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     1
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 1 "test-")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 2 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 '())))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 2 1)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 2 2)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 2 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     2
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 2 "test-")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 3 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 '())))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 3 1)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 3 2)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (generate-test-n 3 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     3
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n 3 "test-")))
+  (is
+   (= (generate-test-n '(a :b "c") nil) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) nil)")
+  (is
+   (= (generate-test-n '(a :b "c") 0) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) 0)")
+  (is
+   (= (generate-test-n '(a :b "c") '()) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) (quote ()))")
+  (is
+   (= (generate-test-n '(a :b "c") 1) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) 1)")
+  (is
+   (= (generate-test-n '(a :b "c") 2) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) 2)")
+  (is
+   (= (generate-test-n '(a :b "c") 3) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) 3)")
+  (is
+   (= (generate-test-n '(a :b "c") '(a :b "c")) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-n '(a :b "c") :test) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) :test)")
+  (is
+   (= (generate-test-n '(a :b "c") (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-n '(a :b "c") true) nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) true)")
+  (is
+   (= (generate-test-n '(a :b "c") "test") nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) \"test\")")
+  (is
+   (=
+    (generate-test-n
+     '(a :b "c")
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-n '(a :b "c") "test-") nil)
+   "Generating assertion for (generate-test-n (quote (a :b \"c\")) \"test-\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test 1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test 2)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     :test
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n :test "test-")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") 1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") 2)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     (symbol "generic-args")
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n (symbol "generic-args") "test-")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true 1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true 2)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n
+     true
+     "Generate a test for this function definition")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (generate-test-n true "test-")))
+  (is
+   (= (generate-test-n "test" nil) nil)
+   "Generating assertion for (generate-test-n \"test\" nil)")
+  (is
+   (= (generate-test-n "test" 0) nil)
+   "Generating assertion for (generate-test-n \"test\" 0)")
+  (is
+   (= (generate-test-n "test" '()) nil)
+   "Generating assertion for (generate-test-n \"test\" (quote ()))")
+  (is
+   (= (generate-test-n "test" 1) nil)
+   "Generating assertion for (generate-test-n \"test\" 1)")
+  (is
+   (= (generate-test-n "test" 2) nil)
+   "Generating assertion for (generate-test-n \"test\" 2)")
+  (is
+   (= (generate-test-n "test" 3) nil)
+   "Generating assertion for (generate-test-n \"test\" 3)")
+  (is
+   (= (generate-test-n "test" '(a :b "c")) nil)
+   "Generating assertion for (generate-test-n \"test\" (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-n "test" :test) nil)
+   "Generating assertion for (generate-test-n \"test\" :test)")
+  (is
+   (= (generate-test-n "test" (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-n \"test\" (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-n "test" true) nil)
+   "Generating assertion for (generate-test-n \"test\" true)")
+  (is
+   (= (generate-test-n "test" "test") nil)
+   "Generating assertion for (generate-test-n \"test\" \"test\")")
+  (is
+   (=
+    (generate-test-n
+     "test"
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-n \"test\" \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-n "test" "test-") nil)
+   "Generating assertion for (generate-test-n \"test\" \"test-\")")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     nil)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" nil)")
+  (is
+   (=
+    (generate-test-n "Generate a test for this function definition" 0)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" 0)")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     '())
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" (quote ()))")
+  (is
+   (=
+    (generate-test-n "Generate a test for this function definition" 1)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" 1)")
+  (is
+   (=
+    (generate-test-n "Generate a test for this function definition" 2)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" 2)")
+  (is
+   (=
+    (generate-test-n "Generate a test for this function definition" 3)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" 3)")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     '(a :b "c"))
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" (quote (a :b \"c\")))")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     :test)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" :test)")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     (symbol "generic-args"))
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" (symbol \"generic-args\"))")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     true)
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" true)")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     "test")
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" \"test\")")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" \"Generate a test for this function definition\")")
+  (is
+   (=
+    (generate-test-n
+     "Generate a test for this function definition"
+     "test-")
+    nil)
+   "Generating assertion for (generate-test-n \"Generate a test for this function definition\" \"test-\")")
+  (is
+   (= (generate-test-n "test-" nil) nil)
+   "Generating assertion for (generate-test-n \"test-\" nil)")
+  (is
+   (= (generate-test-n "test-" 0) nil)
+   "Generating assertion for (generate-test-n \"test-\" 0)")
+  (is
+   (= (generate-test-n "test-" '()) nil)
+   "Generating assertion for (generate-test-n \"test-\" (quote ()))")
+  (is
+   (= (generate-test-n "test-" 1) nil)
+   "Generating assertion for (generate-test-n \"test-\" 1)")
+  (is
+   (= (generate-test-n "test-" 2) nil)
+   "Generating assertion for (generate-test-n \"test-\" 2)")
+  (is
+   (= (generate-test-n "test-" 3) nil)
+   "Generating assertion for (generate-test-n \"test-\" 3)")
+  (is
+   (= (generate-test-n "test-" '(a :b "c")) nil)
+   "Generating assertion for (generate-test-n \"test-\" (quote (a :b \"c\")))")
+  (is
+   (= (generate-test-n "test-" :test) nil)
+   "Generating assertion for (generate-test-n \"test-\" :test)")
+  (is
+   (= (generate-test-n "test-" (symbol "generic-args")) nil)
+   "Generating assertion for (generate-test-n \"test-\" (symbol \"generic-args\"))")
+  (is
+   (= (generate-test-n "test-" true) nil)
+   "Generating assertion for (generate-test-n \"test-\" true)")
+  (is
+   (= (generate-test-n "test-" "test") nil)
+   "Generating assertion for (generate-test-n \"test-\" \"test\")")
+  (is
+   (=
+    (generate-test-n
+     "test-"
+     "Generate a test for this function definition")
+    nil)
+   "Generating assertion for (generate-test-n \"test-\" \"Generate a test for this function definition\")")
+  (is
+   (= (generate-test-n "test-" "test-") nil)
+   "Generating assertion for (generate-test-n \"test-\" \"test-\")")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-clean-filename
+ (testing
+  "clean-filename"
+  (is (thrown? java.lang.NullPointerException (clean-filename nil)))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename 0)))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename -1)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (clean-filename '())))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename 1)))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename -2)))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename 3)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (clean-filename '(a :b "c"))))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename 4)))
+  (is (thrown? java.lang.IllegalArgumentException (clean-filename 5)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (clean-filename :test)))
+  (is
+   (= (clean-filename "src/") "")
+   "Generating assertion for (clean-filename \"src/\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (clean-filename (symbol "generic-args"))))
+  (is
+   (thrown? java.lang.IllegalArgumentException (clean-filename true)))
+  (is
+   (= (clean-filename "test") "test")
+   "Generating assertion for (clean-filename \"test\")")
+  (is
+   (= (clean-filename ".clj") "")
+   "Generating assertion for (clean-filename \".clj\")")
+  (is
+   (=
+    (clean-filename
+     "remove the leading 'src/' and trailing '.clj' (if present) from a Clojure file name")
+    "' and trailing '.clj' (if present) from a Clojure file name")
+   "Generating assertion for (clean-filename \"remove the leading 'src/' and trailing '.clj' (if present) from a Clojure file name\")")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-testname-from-filename
+ (testing
+  "testname-from-filename"
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (testname-from-filename nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename -1)))
+  (is
+   (= (testname-from-filename "") "test/_test.clj")
+   "Generating assertion for (testname-from-filename \"\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename -2)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename 1)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename '(a :b "c"))))
+  (is
+   (= (testname-from-filename "_test.clj") "test/_test_test.clj")
+   "Generating assertion for (testname-from-filename \"_test.clj\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename :test)))
+  (is
+   (= (testname-from-filename "src/") "test/_test.clj")
+   "Generating assertion for (testname-from-filename \"src/\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (testname-from-filename true)))
+  (is
+   (= (testname-from-filename "test") "test/test_test.clj")
+   "Generating assertion for (testname-from-filename \"test\")")
+  (is
+   (=
+    (testname-from-filename
+     "return an approximately-correct filename in which to save tests")
+    "test/return an approximately-correct filename in which to save tests_test.clj")
+   "Generating assertion for (testname-from-filename \"return an approximately-correct filename in which to save tests\")")
+  (is
+   (= (testname-from-filename "test/") "test/test/_test.clj")
+   "Generating assertion for (testname-from-filename \"test/\")")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-packagename-from-filename
+ (testing
+  "packagename-from-filename"
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (packagename-from-filename nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (packagename-from-filename 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (packagename-from-filename '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (packagename-from-filename '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (packagename-from-filename :test)))
+  (is
+   (= (packagename-from-filename ".") (symbol "."))
+   "Generating assertion for (packagename-from-filename \".\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (packagename-from-filename (symbol "generic-args"))))
+  (is
+   (= (packagename-from-filename "/") (symbol "."))
+   "Generating assertion for (packagename-from-filename \"/\")")
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (packagename-from-filename true)))
+  (is
+   (= (packagename-from-filename "test") (symbol "test"))
+   "Generating assertion for (packagename-from-filename \"test\")")
+  (is
+   (=
+    (packagename-from-filename
+     "Return, as a symbol, an appropiate name for a test file associated with this filename. There's\n  probably a better way of doing this.")
+    (symbol
+     "Return, as a symbol, an appropiate name for a test file associated with this filename. There's\n  probably a better way of doing this."))
+   "Generating assertion for (packagename-from-filename \"Return, as a symbol, an appropiate name for a test file associated with this filename. There's\\n  probably a better way of doing this.\")")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+;; ERROR while attempting to generate
+
+
+
+;; ERROR while attempting to generate
+
+(deftest
+ test-find-vars-in-file
+ (testing
+  "find-vars-in-file"
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-vars-in-file nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (find-vars-in-file 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-vars-in-file '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-vars-in-file '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-vars-in-file :test)))
+  (is
+   (thrown?
+    java.io.FileNotFoundException
+    (find-vars-in-file
+     "Return a list of names of vars declared in the file at this path name")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-vars-in-file (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (find-vars-in-file true)))
+  (is
+   (thrown? java.io.FileNotFoundException (find-vars-in-file "test")))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest
+ test-write-header
+ (testing
+  "write-header"
+  (is (thrown? java.lang.NullPointerException (write-header nil nil)))
+  (is (thrown? java.lang.NullPointerException (write-header nil 0)))
+  (is (thrown? java.lang.NullPointerException (write-header nil '())))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (write-header nil "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (write-header nil '(a :b "c"))))
+  (is
+   (thrown? java.lang.NullPointerException (write-header nil :test)))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (write-header nil (symbol "generic-args"))))
+  (is (thrown? java.lang.NullPointerException (write-header nil true)))
+  (is
+   (thrown? java.lang.NullPointerException (write-header nil "test")))
+  (is
+   (thrown? java.lang.NullPointerException (write-header nil "(ns ")))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (write-header nil "_test\n")))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (write-header nil " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.NullPointerException
+    (write-header
+     nil
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header 0 nil)))
+  (is (thrown? java.lang.IllegalArgumentException (write-header 0 0)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header 0 '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 '(a :b "c"))))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header 0 :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 (symbol "generic-args"))))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header 0 true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header 0 " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     0
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header '() nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header '() 0)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header '() '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '() " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     '()
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "\t(:require [clojure.test :refer :all]\n\t[" nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "\t(:require [clojure.test :refer :all]\n\t[" 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "\t(:require [clojure.test :refer :all]\n\t[" '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "\t(:require [clojure.test :refer :all]\n\t[" true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "\t(:require [clojure.test :refer :all]\n\t["
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     '(a :b "c")
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header '(a :b "c") " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     '(a :b "c")
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header :test 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     :test
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header :test " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     :test
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     (symbol "generic-args")
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header (symbol "generic-args") " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     (symbol "generic-args")
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true nil)))
+  (is
+   (thrown? java.lang.IllegalArgumentException (write-header true 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header true " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     true
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "test"
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "test" " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "test"
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "(ns "
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "(ns " " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "(ns "
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "_test\n"
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header "_test\n" " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     "_test\n"
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" 0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     " :refer :all]))\n\n"
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header " :refer :all]))\n\n" " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     " :refer :all]))\n\n"
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     nil)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     0)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     '())))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     "\t(:require [clojure.test :refer :all]\n\t[")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     '(a :b "c"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     :test)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     (symbol "generic-args"))))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     true)))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     "test")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     "(ns ")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     "_test\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     " :refer :all]))\n\n")))
+  (is
+   (thrown?
+    java.lang.IllegalArgumentException
+    (write-header
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n"
+     ";; auto-generated by testgen - see https://github.com/simon-brooke/testgen\n\n")))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+;; ERROR while attempting to generate
+
+
+
+;; end of file ;;
+
